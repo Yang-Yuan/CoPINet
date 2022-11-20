@@ -14,12 +14,7 @@ class CoPINet(nn.Module):
         self.num_rule = num_rule
         self.sample = sample
 
-        self.conv1 = nn.Conv2d(1,
-                               64,
-                               kernel_size=7,
-                               stride=2,
-                               padding=3,
-                               bias=False)
+        self.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -29,12 +24,7 @@ class CoPINet(nn.Module):
         self.conv_col = conv3x3(64, 64)
         self.bn_col = nn.BatchNorm2d(64, 64)
 
-        self.inf_conv1 = nn.Conv2d(1,
-                                   64,
-                                   kernel_size=7,
-                                   stride=2,
-                                   padding=3,
-                                   bias=False)
+        self.inf_conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.inf_bn1 = nn.BatchNorm2d(64)
 
         self.inf_conv_row = conv3x3(64, 64)
@@ -50,28 +40,16 @@ class CoPINet(nn.Module):
 
         # basis
         self.basis_bias = nn.Linear(self.num_rule, 64, bias=False)
-        self.contrast1_bias_trans = MLP(in_dim=64,
-                                        out_dim=64)  # nn.Linear(64, 64)
-        self.contrast2_bias_trans = MLP(in_dim=64,
-                                        out_dim=64)  # nn.Linear(64, 64)
+        self.contrast1_bias_trans = MLP(in_dim=64, out_dim=64)  # nn.Linear(64, 64)
+        self.contrast2_bias_trans = MLP(in_dim=64, out_dim=64)  # nn.Linear(64, 64)
 
         self.res1_contrast = conv3x3(64 + 64, 64)
         self.res1_contrast_bn = nn.BatchNorm2d(64)
-        self.res1 = ResBlock(64,
-                             128,
-                             stride=2,
-                             downsample=nn.Sequential(
-                                 conv1x1(64, 128, stride=2),
-                                 nn.BatchNorm2d(128)))
+        self.res1 = ResBlock(64, 128, stride=2, downsample=nn.Sequential(conv1x1(64, 128, stride=2), nn.BatchNorm2d(128)))
 
         self.res2_contrast = conv3x3(128 + 64, 128)
         self.res2_contrast_bn = nn.BatchNorm2d(128)
-        self.res2 = ResBlock(128,
-                             256,
-                             stride=2,
-                             downsample=nn.Sequential(
-                                 conv1x1(128, 256, stride=2),
-                                 nn.BatchNorm2d(256)))
+        self.res2 = ResBlock(128, 256, stride=2, downsample=nn.Sequential(conv1x1(128, 256, stride=2), nn.BatchNorm2d(256)))
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
 
@@ -79,9 +57,7 @@ class CoPINet(nn.Module):
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight,
-                                        mode="fan_out",
-                                        nonlinearity="relu")
+                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
             elif isinstance(m, (nn.InstanceNorm2d, nn.BatchNorm2d)):
                 if m.affine:
                     nn.init.constant_(m.weight, 1)

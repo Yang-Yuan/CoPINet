@@ -26,7 +26,7 @@ def check_paths(args):
         if not os.path.exists(args.log_dir):
             os.makedirs(args.log_dir)
         new_log_dir = os.path.join(args.log_dir,
-                                   time.ctime().replace(" ", "-"))
+                                   time.ctime().replace(" ", "-").replace(":", "-"))
         args.log_dir = new_log_dir
         if not os.path.exists(args.log_dir):
             os.makedirs(args.log_dir)
@@ -216,41 +216,39 @@ def main():
                                              help="parser for training")
     train_arg_parser.add_argument("--epochs",
                                   type=int,
-                                  default=200,
+                                  default=3,
                                   help="the number of training epochs")
     train_arg_parser.add_argument("--batch-size",
                                   type=int,
-                                  default=32,
+                                  default=4,
                                   help="size of batch")
     train_arg_parser.add_argument("--seed",
                                   type=int,
                                   default=1234,
                                   help="random number seed")
-    train_arg_parser.add_argument(
-        "--device",
-        type=int,
-        default=0,
-        help="device index for GPU; if GPU unavailable, leave it as default")
+    train_arg_parser.add_argument("--device",
+                                  type=int,
+                                  default=0,
+                                  help="device index for GPU; if GPU unavailable, leave it as default")
     train_arg_parser.add_argument("--num-workers",
                                   type=int,
-                                  default=16,
+                                  default=0,
                                   help="number of workers for data loader")
-    train_arg_parser.add_argument(
-        "--dataset",
-        type=str,
-        default="/home/chizhang/Datasets/RAVEN-10000/",
-        help="dataset path")
+    train_arg_parser.add_argument("--dataset",
+                                  type=str,
+                                  default="C:/statuette-data/RAVEN-7W/",
+                                  help="dataset path")
     train_arg_parser.add_argument("--checkpoint-dir",
                                   type=str,
-                                  default="./experiments/ckpt/",
+                                  default="../results/checkpoints/",
                                   help="checkpoint save path")
     train_arg_parser.add_argument("--save-dir",
                                   type=str,
-                                  default="./experiments/save/",
+                                  default="../results/save/",
                                   help="final model save path")
     train_arg_parser.add_argument("--log-dir",
                                   type=str,
-                                  default="./experiments/log/",
+                                  default="../results/log/",
                                   help="log save path")
     train_arg_parser.add_argument("--img-size",
                                   type=int,
@@ -268,24 +266,23 @@ def main():
     test_arg_parser = subparsers.add_parser("test", help="parser for testing")
     test_arg_parser.add_argument("--batch-size",
                                  type=int,
-                                 default=32,
+                                 default=4,
                                  help="size of batch")
-    test_arg_parser.add_argument(
-        "--device",
-        type=int,
-        default=0,
-        help="device index for GPU; if GPU unavailable, leave it as default")
+    test_arg_parser.add_argument("--device",
+                                 type=int,
+                                 default=0,
+                                 help="device index for GPU; if GPU unavailable, leave it as default")
     test_arg_parser.add_argument("--num-workers",
                                  type=int,
-                                 default=16,
+                                 default=0,
                                  help="number of workers for data loader")
     test_arg_parser.add_argument("--dataset",
                                  type=str,
-                                 default="/home/chizhang/Datasets/RAVEN-10000",
+                                 default="C:/statuette-data/RAVEN-7W/",
                                  help="dataset path")
     test_arg_parser.add_argument("--model-path",
                                  type=str,
-                                 required=True,
+                                 default = "../results/save/",
                                  help="path to a trained model")
     test_arg_parser.add_argument("--img-size",
                                  type=int,
