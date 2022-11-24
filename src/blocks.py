@@ -21,6 +21,26 @@ def conv3x3(in_channel, out_channel, stride=1):
                      bias=False)
 
 
+def tail(func):
+
+    def wrapper(self, x):
+
+        x_shape = x.shape
+
+        x = x.view((-1,) + x_shape[-3:])
+        x = func(self, x)
+        x = x.view(x_shape[:-3] + x.shape[-3:])
+
+        return x
+
+    return wrapper
+
+
+
+
+
+
+
 class Identity(nn.Module):
 
     def __init__(self):
@@ -32,11 +52,11 @@ class Identity(nn.Module):
 
 class MLP(nn.Module):
 
-    def __init__(self, in_dim=256, out_dim=8, dropout=False):
+    def __init__(self, in_channels=256, out_channels=8, dropout=False):
         super(MLP, self).__init__()
-        self.fc1 = nn.Linear(in_dim, in_dim)
+        self.fc1 = nn.Linear(in_channels, in_channels)
         self.relu1 = nn.ReLU()
-        self.fc2 = nn.Linear(in_dim, out_dim)
+        self.fc2 = nn.Linear(in_channels, out_channels)
         if dropout:
             self.dropout = nn.Dropout(0.5)
         else:
@@ -51,18 +71,21 @@ class MLP(nn.Module):
 
 class ResBlock(nn.Module):
 
-    def __init__(self, in_channel, out_channel, stride=1, downsample=None):
+    def __init__(self, in_channels, out_channels, stride=1, downsample=None):
         super(ResBlock, self).__init__()
-        self.conv1 = conv3x3(in_channel, out_channel, stride)
-        self.bn1 = nn.BatchNorm2d(out_channel)
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.conv1 = conv3x3(self.in_channels, self.out_channels, stride)
+        self.bn1 = nn.BatchNorm2d(self.out_channels)
         self.relu = nn.ReLU(inplace=True)
-        self.conv2 = conv3x3(out_channel, out_channel)
-        self.bn2 = nn.BatchNorm2d(out_channel)
+        self.conv2 = conv3x3(self.out_channels, self.out_channels)
+        self.bn2 = nn.BatchNorm2d(self.out_channels)
         if downsample is None:
             self.downsample = Identity()
         else:
             self.downsample = downsample
 
+    @tail
     def forward(self, x):
         out = self.relu(self.bn1(self.conv1(x)))
         out = self.relu(self.downsample(x) + self.bn2(self.conv2(out)))
