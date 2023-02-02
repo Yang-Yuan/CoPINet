@@ -19,8 +19,7 @@ class dataset(Dataset):
         self.dataset_path = dataset_path
         if not test:
             self.file_names = [
-                f for f in glob.glob(
-                    os.path.join(self.dataset_path, "*", "*.npz"))
+                f for f in glob.glob(os.path.join(self.dataset_path, "*", "*.npz"))
                 if dataset_type in f
             ]
         else:

@@ -236,7 +236,7 @@ def main():
                                   help="number of workers for data loader")
     train_arg_parser.add_argument("--dataset",
                                   type=str,
-                                  default="C:/statuette-data/RAVEN-7W/",
+                                  default="C:/data/RAVEN-10000/",
                                   help="dataset path")
     train_arg_parser.add_argument("--checkpoint-dir",
                                   type=str,
